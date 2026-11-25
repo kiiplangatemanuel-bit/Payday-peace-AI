@@ -24,6 +24,29 @@ npm run dev
 
 Configure a **new Supabase project dedicated to Payday Peace AI** and run the SQL migration in `supabase/migrations`. Never reuse OneCore credentials or databases.
 
+
+## Deployment layout
+
+- **Frontend:** Vercel, linked to this repository's `main` branch.
+- **Backend API:** Render web service running `node server.js`.
+- **Database and authentication:** the dedicated Payday Peace AI Supabase project.
+
+### Vercel environment variables
+
+- `NEXT_PUBLIC_API_BASE_URL`: the Render API base URL.
+- `NEXT_PUBLIC_SUPABASE_URL`: the Payday Peace AI Supabase project URL.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: the Supabase publishable key (safe for browser use).
+
+### Render environment variables
+
+- `SUPABASE_URL`: the Payday Peace AI Supabase project URL.
+- `SUPABASE_PUBLISHABLE_KEY`: the Supabase publishable key.
+- `FRONTEND_ORIGIN`: the exact production Vercel origin, e.g. `https://payday-peace-ai.vercel.app`.
+- `OPENAI_API_KEY`: required to enable AI assistant responses; add it as a secret in Render, never in Vercel's public variables.
+- `OPENAI_MODEL`: optional; defaults to `gpt-4o-mini`.
+
+The Render API exposes `GET /health` for health checks and authenticated `POST /api/assistant` for AI requests. User data is queried using the caller's Supabase access token and owner-scoped RLS; no service-role key is used.
+
 ## Environment
 See `.env.example`. Only the Supabase publishable/anon key belongs in the browser. Keep OpenAI and any future payment secrets server-side.
 
