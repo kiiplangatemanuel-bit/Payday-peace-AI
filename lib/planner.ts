@@ -1,0 +1,7 @@
+export type Frequency = "weekly" | "biweekly" | "semimonthly" | "monthly" | "irregular";
+export type Bill = { id:string; name:string; amount:number; dueDate:string; paid?:boolean };
+const DAY = 86400000;
+export function money(n:number){return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number.isFinite(n)?n:0)}
+export function periodEnd(nextPayday:string,frequency:Frequency){const d=new Date(nextPayday+"T12:00:00");if(Number.isNaN(d.getTime()))return nextPayday;const days=frequency==="weekly"?7:frequency==="biweekly"?14:frequency==="semimonthly"?15:frequency==="monthly"?31:14;d.setTime(d.getTime()+days*DAY-DAY);return d.toISOString().slice(0,10)}
+export function allocateBills(income:number,nextPayday:string,bills:Bill[],frequency:Frequency){const end=periodEnd(nextPayday,frequency);const due=bills.filter(b=>!b.paid&&b.dueDate>=nextPayday&&b.dueDate<=end);const billTotal=due.reduce((s,b)=>s+Math.max(0,b.amount),0);return {periodEnd:end,bills:due,billTotal,remaining:income-billTotal,overAllocated:billTotal>income}}
+export function nextPaydays(start:string,frequency:Frequency,count=6){const result:string[]=[];const d=new Date(start+"T12:00:00");for(let i=0;i<count;i++){result.push(d.toISOString().slice(0,10));if(frequency==="weekly")d.setDate(d.getDate()+7);else if(frequency==="biweekly")d.setDate(d.getDate()+14);else if(frequency==="semimonthly")d.setDate(d.getDate()+15);else if(frequency==="monthly")d.setMonth(d.getMonth()+1);else break;}return result}
