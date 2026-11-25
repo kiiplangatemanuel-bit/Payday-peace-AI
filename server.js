@@ -1,7 +1,7 @@
-import { createServer } from "node:http";
-import OpenAI from "openai";
-import { createClient } from "@supabase/supabase-js";
-import { z } from "zod";
+const { createServer } = require("node:http");
+const OpenAI = require("openai");
+const { createClient } = require("@supabase/supabase-js");
+const { z } = require("zod");
 
 const schema = z.object({ question: z.string().trim().min(2).max(1000) });
 const allowedOrigins = (process.env.FRONTEND_ORIGIN || "").split(",").map((v) => v.trim()).filter(Boolean);
